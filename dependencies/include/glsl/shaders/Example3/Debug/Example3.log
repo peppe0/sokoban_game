@@ -1,0 +1,8 @@
+﻿  example3.cpp
+c:\users\fabriziolamberti\desktop\glsl\shaders\example3\example3.cpp(107): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: vedere la dichiarazione di 'fopen'
+c:\users\fabriziolamberti\desktop\glsl\shaders\example3\example3.cpp(174): warning C4838: la conversione da 'double' a 'GLfloat' richiede una conversione verso un tipo di dati più piccolo
+c:\users\fabriziolamberti\desktop\glsl\shaders\example3\example3.cpp(189): warning C4838: la conversione da 'double' a 'GLfloat' richiede una conversione verso un tipo di dati più piccolo
+c:\users\fabriziolamberti\desktop\glsl\shaders\example3\example3.cpp(190): warning C4838: la conversione da 'double' a 'GLfloat' richiede una conversione verso un tipo di dati più piccolo
+c:\users\fabriziolamberti\desktop\glsl\shaders\example3\example3.cpp(191): warning C4838: la conversione da 'double' a 'GLfloat' richiede una conversione verso un tipo di dati più piccolo
+  Example3.vcxproj -> C:\Users\fabriziolamberti\Desktop\glsl\Shaders\Debug\Example3.exe

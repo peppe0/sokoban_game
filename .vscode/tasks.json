@@ -1,0 +1,56 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C/C++: clang++ compila il file attivo",
+			"command": "/usr/bin/clang++",
+			"args": [
+				"-std=c++17",
+				"-fcolor-diagnostics",
+				"-fansi-escape-codes",
+				"-Wall",
+				"-g",
+				"-I${workspaceFolder}/dependencies/include",
+				"-L${workspaceFolder}/dependencies/library",
+				"${workspaceFolder}/main.cpp",
+                "${workspaceFolder}/game.cpp",
+				"${workspaceFolder}/resource_manager.cpp",
+				"${workspaceFolder}/shader.cpp",
+                "${workspaceFolder}/texture.cpp",
+				"${workspaceFolder}/glad.c",
+				"${workspaceFolder}/spriteRendered.cpp",
+				"-o",
+			    "${fileDirname}/${fileBasenameNoExtension}",
+			
+				"${workspaceFolder}/dependencies/library/libglfw.3.4.dylib",
+				"${workspaceFolder}/dependencies/library/libGLEW.2.2.0.dylib",
+				"-framework",
+				"OpenGL",
+				"-framework",
+				"Cocoa",
+				"-framework",
+				"IOKit",
+				"-framework",
+				"CoreVideo",
+				"-framework",
+				"CoreFoundation",
+				"-framework",
+				"GLUT",
+				"-Wno-deprecated"
+				
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compilatore: /usr/bin/clang++"
+		}
+	]
+}

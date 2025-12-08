@@ -1,0 +1,4 @@
+﻿  example1.cpp
+c:\users\fabriziolamberti\desktop\glsl\shaders\example1\example1.cpp(49): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: vedere la dichiarazione di 'fopen'
+  Example1.vcxproj -> C:\Users\fabriziolamberti\Desktop\glsl\Shaders\Debug\Example1.exe
