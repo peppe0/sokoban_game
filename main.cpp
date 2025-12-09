@@ -9,8 +9,8 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
-const unsigned int SCREEN_WIDTH = 800;
-const unsigned int SCREEN_HEIGHT = 600;
+const unsigned int SCREEN_WIDTH = 900;
+const unsigned int SCREEN_HEIGHT = 400;
 
 Game Sokoban(SCREEN_WIDTH, SCREEN_HEIGHT);
 

@@ -13,15 +13,10 @@
 				"-g",
 				"-I${workspaceFolder}/dependencies/include",
 				"-L${workspaceFolder}/dependencies/library",
-				"${workspaceFolder}/main.cpp",
-                "${workspaceFolder}/game.cpp",
-				"${workspaceFolder}/resource_manager.cpp",
-				"${workspaceFolder}/shader.cpp",
-                "${workspaceFolder}/texture.cpp",
+				 "${workspaceFolder}/*.cpp", 
 				"${workspaceFolder}/glad.c",
-				"${workspaceFolder}/spriteRendered.cpp",
 				"-o",
-			    "${fileDirname}/${fileBasenameNoExtension}",
+			    "${fileDirname}/sokoban}",
 			
 				"${workspaceFolder}/dependencies/library/libglfw.3.4.dylib",
 				"${workspaceFolder}/dependencies/library/libGLEW.2.2.0.dylib",
@@ -41,7 +36,7 @@
 				
 			],
 			"options": {
-				"cwd": "${fileDirname}"
+				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$gcc"
