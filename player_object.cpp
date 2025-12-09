@@ -9,43 +9,86 @@
 #include "player_object.h"
 
 
-PlayerObject::PlayerObject() 
+ PlayerObject::PlayerObject() 
     : GameObject(), Radius(12.5f), Stuck(true) { }
 
-PlayerObject::PlayerObject(glm::vec2 pos, float radius, glm::vec2 velocity, Texture2D sprite)
-    : GameObject(pos, glm::vec2(radius * 2.0f, radius * 2.0f), sprite, glm::vec3(1.0f), velocity), Radius(radius), Stuck(true) { }
-
+PlayerObject::PlayerObject(glm::vec2 pos, glm::vec2 size, Texture2D sprite)
+    : GameObject(pos, size, sprite, glm::vec3(1.0f), glm::vec2(0.0f, 0.0f)), Radius(0.0f), Stuck(false) 
+{ 
+}
 glm::vec2 PlayerObject::Move(float dt, unsigned int window_width)
 {
     // if not stuck to player board
-    if (!this->Stuck)
-    {
-        // move the ball
-        this->Position += this->Velocity * dt;
-        // then check if outside window bounds and if so, reverse velocity and restore at correct position
-        if (this->Position.x <= 0.0f)
-        {
-            this->Velocity.x = -this->Velocity.x;
-            this->Position.x = 0.0f;
-        }
-        else if (this->Position.x + this->Size.x >= window_width)
-        {
-            this->Velocity.x = -this->Velocity.x;
-            this->Position.x = window_width - this->Size.x;
-        }
-        if (this->Position.y <= 0.0f)
-        {
-            this->Velocity.y = -this->Velocity.y;
-            this->Position.y = 0.0f;
-        }
-    }
     return this->Position;
 }
 
-// resets the ball to initial Stuck Position (if ball is outside window bounds)
-void PlayerObject::Reset(glm::vec2 position, glm::vec2 velocity)
+void PlayerObject::MoveGrid(int dx, int dy, float stepX, float stepY, std::vector<std::vector<unsigned int>>& levelData, std::vector<GameObject>& bricks)
 {
-    this->Position = position;
-    this->Velocity = velocity;
-    this->Stuck = true;
+    // Calculate current grid position
+    int playerGridX = (int)(this->Position.x / stepX);
+    int playerGridY = (int)(this->Position.y / stepY);
+    
+    int targetX = playerGridX + dx;
+    int targetY = playerGridY + dy;
+    
+    // Check bounds
+    if (targetY < 0 || targetY >= levelData.size() || 
+        targetX < 0 || targetX >= levelData[0].size())
+        return;
+    
+    unsigned int targetTile = levelData[targetY][targetX];
+    
+    // Case 1: Empty floor (0) or Target (3) - Player can walk freely
+    if (targetTile == 0 || targetTile == 3)
+    {
+        this->Position.x += dx * stepX;
+        this->Position.y += dy * stepY;
+    }
+    // Case 2: Wall (1) or Border (5) - Block movement
+    else if (targetTile == 1 || targetTile == 5)
+    {
+        // Do nothing - wall blocks movement
+    }
+    // Case 3: Box (2) - Try to push it
+    else if (targetTile == 2)
+    {
+        // Check the tile BEHIND the box
+        int boxNextX = targetX + dx;
+        int boxNextY = targetY + dy;
+        
+        // Check bounds for box destination
+        if (boxNextY < 0 || boxNextY >= levelData.size() || 
+            boxNextX < 0 || boxNextX >= levelData[0].size())
+            return;
+        
+        unsigned int boxNextTile = levelData[boxNextY][boxNextX];
+        
+        // Can only push box if destination is empty (0) or target (3)
+        if (boxNextTile == 0 || boxNextTile == 3)
+        {
+            // Update matrix: Move box
+            levelData[boxNextY][boxNextX] = 2; // Place box at new location
+            levelData[targetY][targetX] = 0;    // Clear old box position
+            
+            // Move player
+            this->Position.x += dx * stepX;
+            this->Position.y += dy * stepY;
+            
+            // Update visual representation (find and move the box GameObject)
+            for (GameObject& brick : bricks)
+            {
+                // Find the box at the old position
+                if (!brick.IsSolid && 
+                    (int)(brick.Position.x / stepX) == targetX && 
+                    (int)(brick.Position.y / stepY) == targetY)
+                {
+                    // Move it to new position
+                    brick.Position.x = boxNextX * stepX;
+                    brick.Position.y = boxNextY * stepY;
+                    break;
+                }
+            }
+        }
+    }
 }
+

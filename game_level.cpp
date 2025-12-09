@@ -54,6 +54,8 @@ bool GameLevel::IsCompleted()
 
 void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned int levelWidth, unsigned int levelHeight)
 {
+
+    this->TileData = tileData;
     // calculate dimensions
     unsigned int height = tileData.size();
     unsigned int width = tileData[0].size(); // note we can index vector at [0] since this function is only called if height > 0
@@ -72,20 +74,26 @@ void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned i
                  obj.IsSolid = true;
                  this->Bricks.push_back(obj);
             }
-            else if (tileData[y][x] > 1 && tileData[y][x] != 4 )	// non-solid; now determine its color based on level data
+            else if (tileData[y][x] > 1 )	// non-solid; now determine its color based on level data
             {
                 glm::vec3 color = glm::vec3(1.0f); // original: white
-                
+                 if (tileData[y][x] == 2)
+                    color = glm::vec3(0.2f, 0.6f, 1.0f);
+                else if (tileData[y][x] == 3)
+                    color = glm::vec3(0.0f, 0.7f, 0.0f);
+                else if (tileData[y][x] == 4){
+                    color = glm::vec3(0.8f, 0.8f, 0.4f);
+            this->PlayerStartPos = glm::vec2(unit_width * x, unit_height * y);
+            }
+                else if (tileData[y][x] == 5)
+                    color = glm::vec3(1.0f, 0.5f, 0.0f);
               
 
                 glm::vec2 pos(unit_width * x, unit_height * y);
                 glm::vec2 size(unit_width, unit_height);
                 this->Bricks.push_back(GameObject(pos, size, ResourceManager::GetTexture("block"), color));
             }
-            else if (tileData[y][x] == 4)
-            {
-                this->PlayerStartPos = glm::vec2(unit_width * x, unit_height * y);
-            }
+            
         }
     }
 }

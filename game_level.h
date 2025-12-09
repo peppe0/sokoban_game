@@ -26,6 +26,9 @@ public:
     // level state
     std::vector<GameObject> Bricks;
     glm::vec2 PlayerStartPos;
+
+    std::vector<std::vector<unsigned int>> TileData;
+
     // constructor
     GameLevel() { }
     // loads level from file
