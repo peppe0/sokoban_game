@@ -28,6 +28,7 @@ Game::~Game()
 {
     delete Renderer;
     delete Player;
+    delete Text;
 }
 
 void Game::Init()
@@ -60,6 +61,9 @@ void Game::Init()
     glm::vec2 playerPos = this->Levels[this->Level].PlayerStartPos; // Assuming 50x50 tiles
     glm::vec2 playerSize = glm::vec2(this->Width / 15.0f, this->Height / 8.0f);
     Player = new PlayerObject(playerPos, playerSize, ResourceManager::GetTexture("face"));
+     Text = new TextRenderer(this->Width, this->Height);
+    Text->Load("fonts/Vollkorn-Black.ttf", 24); // Make sure this file exists!
+
 }
 
 void Game::Update(float dt)
@@ -99,18 +103,32 @@ void Game::ProcessInput(float dt)
         
         if (dx != 0 || dy != 0)
         {
-            Player->MoveGrid(dx, dy, stepX, stepY, 
-            this->Levels[this->Level].TileData,    
-            this->Levels[this->Level].Bricks);   
-
+           bool won = Player->MoveGrid(dx, dy, stepX, stepY, 
+                this->Levels[this->Level].TileData,    
+                this->Levels[this->Level].Bricks);
+            
+            if (won)
+            {
+                this->State = GAME_WIN;
+                std::cout << "YOU WON!" << std::endl; // Console message
+            }
         }
-        
+          
     }
+    if (this->State == GAME_WIN)
+        {
+        if (this->Keys[GLFW_KEY_ENTER])
+        {
+            this->State = GAME_ACTIVE;
+            this->Levels[this->Level].Load("levels/one.lvl", this->Width, this->Height); // Reload level
+            Player->Position = this->Levels[this->Level].PlayerStartPos; // Reset player
+        }
+         }
 }
 
 void Game::Render()
 {
-     if(this->State == GAME_ACTIVE)
+     if(this->State == GAME_ACTIVE || this->State == GAME_WIN)
     {
         // draw background
         Renderer->DrawSprite(ResourceManager::GetTexture("background"), glm::vec2(0.0f, 0.0f), glm::vec2(this->Width, this->Height), 0.0f);
@@ -118,5 +136,21 @@ void Game::Render()
         this->Levels[this->Level].Draw(*Renderer);
         // draw player
         Player->Draw(*Renderer);
+        if (this->State == GAME_WIN)
+        {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            Text->RenderText("YOU WON!!!", 320.0f, Height / 2.0f - 20.0f, 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+            Text->RenderText("Press ENTER to retry or ESC to quit", 130.0f, Height / 2.0f + 20.0f, 0.5f, glm::vec3(1.0f, 1.0f, 0.0f));
+            glDisable(GL_BLEND);
+            // Option 1: Load a "youwin.png" texture and display it
+            // ResourceManager::LoadTexture("textures/youwin.png", true, "wintext");
+            // Renderer->DrawSprite(ResourceManager::GetTexture("wintext"), 
+            //     glm::vec2(this->Width / 2.0f - 100, this->Height / 2.0f - 50), 
+            //     glm::vec2(200, 100), 0.0f);
+            
+            // Option 2: Just use console for now (already done above)
+        }
     }
 }

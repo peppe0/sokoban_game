@@ -12,7 +12,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "game_level.h"
-
+#include "text_render.h" 
 
 // Represents the current state of the game
 enum GameState {
@@ -34,6 +34,9 @@ public:
     bool                    Keys[1024];
     bool                    KeysProcessed[1024];
     unsigned int            Width, Height;
+
+    TextRenderer            *Text; 
+
     // constructor/destructor
     Game(unsigned int width, unsigned int height);
     ~Game();

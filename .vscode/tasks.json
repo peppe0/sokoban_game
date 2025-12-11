@@ -12,11 +12,13 @@
 				"-Wall",
 				"-g",
 				"-I${workspaceFolder}/dependencies/include",
+				"-I/opt/homebrew/include/freetype2",
 				"-L${workspaceFolder}/dependencies/library",
+				"-L/opt/homebrew/lib", 
 				 "${workspaceFolder}/*.cpp", 
 				"${workspaceFolder}/glad.c",
 				"-o",
-			    "${fileDirname}/sokoban}",
+			    "${fileDirname}/sokoban",
 			
 				"${workspaceFolder}/dependencies/library/libglfw.3.4.dylib",
 				"${workspaceFolder}/dependencies/library/libGLEW.2.2.0.dylib",
@@ -32,7 +34,8 @@
 				"CoreFoundation",
 				"-framework",
 				"GLUT",
-				"-Wno-deprecated"
+				"-Wno-deprecated",
+				"-lfreetype"
 				
 			],
 			"options": {

@@ -22,7 +22,7 @@ glm::vec2 PlayerObject::Move(float dt, unsigned int window_width)
     return this->Position;
 }
 
-void PlayerObject::MoveGrid(int dx, int dy, float stepX, float stepY, std::vector<std::vector<unsigned int>>& levelData, std::vector<GameObject>& bricks)
+bool PlayerObject::MoveGrid(int dx, int dy, float stepX, float stepY, std::vector<std::vector<unsigned int>>& levelData, std::vector<GameObject>& bricks)
 {
     // Calculate current grid position
     int playerGridX = (int)(this->Position.x / stepX);
@@ -34,7 +34,7 @@ void PlayerObject::MoveGrid(int dx, int dy, float stepX, float stepY, std::vecto
     // Check bounds
     if (targetY < 0 || targetY >= levelData.size() || 
         targetX < 0 || targetX >= levelData[0].size())
-        return;
+        return false;
     
     unsigned int targetTile = levelData[targetY][targetX];
     
@@ -59,7 +59,7 @@ void PlayerObject::MoveGrid(int dx, int dy, float stepX, float stepY, std::vecto
         // Check bounds for box destination
         if (boxNextY < 0 || boxNextY >= levelData.size() || 
             boxNextX < 0 || boxNextX >= levelData[0].size())
-            return;
+            return false;
         
         unsigned int boxNextTile = levelData[boxNextY][boxNextX];
         
@@ -90,5 +90,23 @@ void PlayerObject::MoveGrid(int dx, int dy, float stepX, float stepY, std::vecto
             }
         }
     }
+    int boxCount = 0;
+    int targetCount = 0;
+    int boxesOnTarget = 0;
+    
+    for (const auto& row : levelData)
+    {
+        for (unsigned int tile : row)
+        {
+            if (tile == 2) boxCount++;
+            if (tile == 3) targetCount++;
+        }
+    }
+    
+    // If all targets are covered by boxes, you win!
+    // This means: no more standalone target tiles (3) visible
+    return (targetCount == 0 && boxCount > 0);
+
+
 }
 
