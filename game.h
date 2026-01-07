@@ -14,6 +14,8 @@
 #include "game_level.h"
 #include "text_render.h" 
 
+struct ma_engine;
+
 // Represents the current state of the game
 enum GameState {
     GAME_ACTIVE,
@@ -36,6 +38,16 @@ public:
     unsigned int            Width, Height;
 
     TextRenderer            *Text; 
+    ma_engine               *AudioEngine;
+
+    // Lighting system
+    bool                    LightingEnabled;
+    struct Light {
+        glm::vec2 position;
+        glm::vec3 color;
+        float radius;
+    };
+    std::vector<Light>      Lights;
 
     // constructor/destructor
     Game(unsigned int width, unsigned int height);

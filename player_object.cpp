@@ -7,6 +7,7 @@
 ** option) any later version.
 ******************************************************************/
 #include "player_object.h"
+#include "miniaudio.h"
 
 
  PlayerObject::PlayerObject() 
@@ -22,7 +23,7 @@ glm::vec2 PlayerObject::Move(float dt, unsigned int window_width)
     return this->Position;
 }
 
-bool PlayerObject::MoveGrid(int dx, int dy, float stepX, float stepY, std::vector<std::vector<unsigned int>>& levelData, std::vector<GameObject>& bricks)
+bool PlayerObject::MoveGrid(int dx, int dy, float stepX, float stepY, std::vector<std::vector<unsigned int>>& levelData, std::vector<GameObject>& bricks, ma_engine* audioEngine)
 {
     // Calculate current grid position
     int playerGridX = (int)(this->Position.x / stepX);
@@ -73,6 +74,11 @@ bool PlayerObject::MoveGrid(int dx, int dy, float stepX, float stepY, std::vecto
             // Move player
             this->Position.x += dx * stepX;
             this->Position.y += dy * stepY;
+            
+            // Play box push sound
+            if (audioEngine) {
+                ma_engine_play_sound(audioEngine, "sounds/placing-cardboard-box.mp3", NULL);
+            }
             
             // Update visual representation (find and move the box GameObject)
             for (GameObject& brick : bricks)

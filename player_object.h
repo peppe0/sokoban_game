@@ -26,7 +26,7 @@ public:
     // moves the ball, keeping it constrained within the window bounds (except bottom edge); returns new position
     glm::vec2 Move(float dt, unsigned int window_width);
     // resets the ball to original state with given position and velocity
-    bool MoveGrid(int dx, int dy, float stepX, float stepY, std::vector<std::vector<unsigned int>>& levelData, std::vector<GameObject>& bricks);
+    bool MoveGrid(int dx, int dy, float stepX, float stepY, std::vector<std::vector<unsigned int>>& levelData, std::vector<GameObject>& bricks, struct ma_engine* audioEngine = nullptr);
 
 };
 
