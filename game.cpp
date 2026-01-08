@@ -13,14 +13,16 @@
 #include "resource_manager.h"
 #include "game_object.h"
 #include "player_object.h"
+#include "heart_3d.h"
 #include <iostream>
+#include <cmath>
 
 SpriteRenderer  *Renderer;
 PlayerObject    *Player;
 
 
 Game::Game(unsigned int width, unsigned int height)
-    : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
+    : State(GAME_ACTIVE), Keys(), Width(width), Height(height), GameTime(0.0f)
 {
     for (int i = 0; i < 1024; ++i)
         this->KeysProcessed[i] = false;
@@ -31,6 +33,9 @@ Game::~Game()
     delete Renderer;
     delete Player;
     delete Text;
+    delete Box;
+    delete Box2;
+    delete Box3;
     if (AudioEngine) {
         ma_engine_uninit(AudioEngine);
         delete AudioEngine;
@@ -85,10 +90,29 @@ void Game::Init()
      Text = new TextRenderer(this->Width, this->Height);
     Text->Load("fonts/Vollkorn-Black.ttf", 24);
 
+    ResourceManager::LoadShader("shaders/box.vs", "shaders/box.frag", nullptr, "box");
+    Box = new Heart3D("resources/love_heart.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.09f), glm::vec3(1.0f, 0.1f, 0.3f));
+    Box2 = new Heart3D("resources/love_heart.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.09f), glm::vec3(1.0f, 0.1f, 0.3f));
+    Box3 = new Heart3D("resources/love_heart.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.09f), glm::vec3(1.0f, 0.1f, 0.3f));
+
 }
 
 void Game::Update(float dt)
 {
+    // Update game time for animations
+    GameTime += dt;
+    
+    // Rotate the 3D hearts
+    if (Box) {
+        Box->Rotation += 50.0f * dt; // Rotate 50 degrees per second
+    }
+    if (Box2) {
+        Box2->Rotation += 50.0f * dt; // Rotate faster
+    }
+    if (Box3) {
+        Box3->Rotation += 50.0f * dt; // Rotate even faster
+    }
+
     // Update lights
     Lights.clear();
     
@@ -188,7 +212,7 @@ void Game::Render()
 {
      if(this->State == GAME_ACTIVE || this->State == GAME_WIN)
     {
-        // Update lighting uniforms
+        // Draw 2D background and sprites first
         Shader shader = ResourceManager::GetShader("sprite");
         shader.Use();
         shader.SetInteger("enableLighting", LightingEnabled);
@@ -209,6 +233,55 @@ void Game::Render()
         this->Levels[this->Level].Draw(*Renderer);
         // draw player
         Player->Draw(*Renderer);
+        
+        // Now render 3D heart on top
+        glEnable(GL_DEPTH_TEST);
+        
+        if (Box) {
+            Shader boxShader = ResourceManager::GetShader("box");
+            
+            // Setup 3D camera - position for top left corner
+            glm::mat4 view = glm::mat4(1.0f);
+            view = glm::translate(view, glm::vec3(-2.0f, 1.0f, -3.0f));
+            
+            glm::mat4 projection3D = glm::perspective(
+                glm::radians(45.0f), 
+                (float)this->Width / (float)this->Height, 
+                0.1f, 
+                100.0f
+            );
+            
+            boxShader.Use();
+            // Animated light that moves in a circle
+            glm::vec3 lightPosition = glm::vec3(
+                2.0f * std::cos(GameTime),
+                1.0f + std::sin(GameTime * 0.5f),
+                3.0f + 2.0f * std::sin(GameTime)
+            );
+            boxShader.SetVector3f("lightPos", lightPosition);
+            boxShader.SetVector3f("lightColor", 1.0f, 1.0f, 1.0f);
+            boxShader.SetVector3f("viewPos", -2.0f, 1.0f, -3.0f);
+            
+            Box->Draw(boxShader, view, projection3D);
+            
+            // Draw second heart next to the first
+            if (Box2) {
+                glm::mat4 view2 = glm::mat4(1.0f);
+                view2 = glm::translate(view2, glm::vec3(-1.6f, 1.0f, -3.0f));
+                boxShader.SetVector3f("viewPos", -1.6f, 1.0f, -3.0f);
+                Box2->Draw(boxShader, view2, projection3D);
+            }
+            
+            // Draw third heart
+            if (Box3) {
+                glm::mat4 view3 = glm::mat4(1.0f);
+                view3 = glm::translate(view3, glm::vec3(-2.4f, 1.0f, -3.0f));
+                boxShader.SetVector3f("viewPos", -2.4f, 1.0f, -3.0f);
+                Box3->Draw(boxShader, view3, projection3D);
+            }
+        }
+        
+        glDisable(GL_DEPTH_TEST);
         if (this->State == GAME_WIN)
         {
             glEnable(GL_BLEND);

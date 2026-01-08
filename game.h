@@ -13,6 +13,7 @@
 #include <GLFW/glfw3.h>
 #include "game_level.h"
 #include "text_render.h" 
+#include "heart_3d.h"
 
 struct ma_engine;
 
@@ -39,6 +40,10 @@ public:
 
     TextRenderer            *Text; 
     ma_engine               *AudioEngine;
+    Heart3D                 *Box;
+    Heart3D                 *Box2;
+    Heart3D                 *Box3;
+    float                   GameTime;
 
     // Lighting system
     bool                    LightingEnabled;

@@ -1,0 +1,4 @@
+
+For the 3D objects, we imported a heart model and loaded it using Assimp in the top-left corner to represent the user's lives.
+Two types of lighting were created: one for the hearts that uses Phong-type lighting and rotates around the lives, and one of ambient type that follows the player.
+Regarding sounds, a sound was added when the player pushes a box and a sound that plays when they have won along with the "you win" text. 
