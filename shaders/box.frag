@@ -1,6 +1,7 @@
 #version 330 core
 in vec3 FragPos;
 in vec3 Normal;
+in vec2 TexCoords;
 
 out vec4 FragColor;
 
@@ -8,6 +9,8 @@ uniform vec3 boxColor;
 uniform vec3 lightPos;
 uniform vec3 lightColor;
 uniform vec3 viewPos;
+uniform sampler2D diffuseMap;
+uniform bool hasTexture;
 
 void main()
 {
@@ -28,6 +31,11 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     vec3 specular = specularStrength * spec * lightColor;
     
-    vec3 result = (ambient + diffuse + specular) * boxColor;
+    vec3 albedo = boxColor;
+    if (hasTexture) {
+        albedo = texture(diffuseMap, TexCoords).rgb;
+    }
+
+    vec3 result = (ambient + diffuse + specular) * albedo;
     FragColor = vec4(result, 1.0);
 }

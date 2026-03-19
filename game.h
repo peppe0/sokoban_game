@@ -43,6 +43,7 @@ public:
     Heart3D                 *Box;
     Heart3D                 *Box2;
     Heart3D                 *Box3;
+    Heart3D                 *player;
     float                   GameTime;
 
     // Lighting system

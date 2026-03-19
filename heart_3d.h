@@ -8,6 +8,9 @@
 #include <vector>
 #include <string>
 
+struct aiScene;
+struct aiMesh;
+
 class Heart3D
 {
 public:
@@ -27,8 +30,12 @@ public:
 
 private:
     unsigned int VAO, VBO;
+    unsigned int DiffuseTextureID;
+    bool HasTexture;
     int vertexCount;
     void loadModel(const std::string& path);
+    bool loadDiffuseTexture(const std::string& modelPath, const aiScene* scene, aiMesh* mesh);
+    unsigned int loadTextureFromFile(const std::string& filename, const std::string& directory);
 };
 
 #endif

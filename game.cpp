@@ -22,7 +22,9 @@ PlayerObject    *Player;
 
 
 Game::Game(unsigned int width, unsigned int height)
-    : State(GAME_ACTIVE), Keys(), Width(width), Height(height), GameTime(0.0f)
+    : State(GAME_ACTIVE), Keys(), Width(width), Height(height),
+      Text(nullptr), AudioEngine(nullptr), Box(nullptr), Box2(nullptr), Box3(nullptr), player(nullptr),
+      GameTime(0.0f)
 {
     for (int i = 0; i < 1024; ++i)
         this->KeysProcessed[i] = false;
@@ -36,6 +38,7 @@ Game::~Game()
     delete Box;
     delete Box2;
     delete Box3;
+    delete player;
     if (AudioEngine) {
         ma_engine_uninit(AudioEngine);
         delete AudioEngine;
@@ -73,6 +76,7 @@ void Game::Init()
     ResourceManager::LoadTexture("textures/block.png", false, "block");
     ResourceManager::LoadTexture("textures/block_solid.png", false, "block_solid");
     ResourceManager::LoadTexture("textures/paddle.png", true, "paddle");
+    ResourceManager::LoadTexture("textures/player.png", false, "player");
     // load levels
     GameLevel one; one.Load("levels/one.lvl", this->Width, this->Height);
     GameLevel two; two.Load("levels/two.lvl", this->Width, this->Height);
@@ -86,7 +90,7 @@ void Game::Init()
    
     glm::vec2 playerPos = this->Levels[this->Level].PlayerStartPos; // Assuming 50x50 tiles
     glm::vec2 playerSize = glm::vec2(this->Width / 15.0f, this->Height / 8.0f);
-    Player = new PlayerObject(playerPos, playerSize, ResourceManager::GetTexture("face"));
+    Player = new PlayerObject(playerPos, playerSize, ResourceManager::GetTexture("player"));
      Text = new TextRenderer(this->Width, this->Height);
     Text->Load("fonts/Vollkorn-Black.ttf", 24);
 
@@ -94,6 +98,9 @@ void Game::Init()
     Box = new Heart3D("resources/love_heart.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.09f), glm::vec3(1.0f, 0.1f, 0.3f));
     Box2 = new Heart3D("resources/love_heart.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.09f), glm::vec3(1.0f, 0.1f, 0.3f));
     Box3 = new Heart3D("resources/love_heart.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.09f), glm::vec3(1.0f, 0.1f, 0.3f));
+    player = new Heart3D("resources/player.obj", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.28f), glm::vec3(1.0f));
+    player->RotationAxis = glm::vec3(1.0f, 0.0f, 0.0f);
+    player->Rotation = 90.0f;
 
 }
 
@@ -101,6 +108,10 @@ void Game::Update(float dt)
 {
     // Update game time for animations
     GameTime += dt;
+
+    if (Player) {
+        Player->UpdateAnimation(dt);
+    }
     
     // Rotate the 3D hearts
     if (Box) {
@@ -111,6 +122,22 @@ void Game::Update(float dt)
     }
     if (Box3) {
         Box3->Rotation += 50.0f * dt; // Rotate even faster
+    }
+    if (player) {
+        player->Rotation = 90.0f;
+    }
+
+    if (player && Player) {
+        float centerX = Player->Position.x + Player->Size.x * 0.5f;
+        float centerY = Player->Position.y + Player->Size.y * 0.5f;
+
+        float normalizedX = centerX / static_cast<float>(this->Width);
+        float normalizedY = centerY / static_cast<float>(this->Height);
+
+        // Map the 2D grid position to a larger centered 3D plane for more visible movement.
+        player->Position.x = (normalizedX - 0.5f) * 5.5f;
+        player->Position.y = (0.5f - normalizedY) * 3.0f;
+        player->Position.z = 0.0f;
     }
 
     // Update lights
@@ -147,6 +174,10 @@ void Game::ProcessInput(float dt)
 
      if (this->State == GAME_ACTIVE)
     {
+        if (Player && Player->IsAnimatingMovement()) {
+            return;
+        }
+
         float stepX = this->Width / 15.0f; 
         float stepY = this->Height / 8.0f;
         int dx = 0, dy = 0;
@@ -231,8 +262,7 @@ void Game::Render()
         Renderer->DrawSprite(ResourceManager::GetTexture("background"), glm::vec2(0.0f, 0.0f), glm::vec2(this->Width, this->Height), 0.0f);
         // draw level
         this->Levels[this->Level].Draw(*Renderer);
-        // draw player
-        Player->Draw(*Renderer);
+        // 2D player rendering disabled: movement is now represented by the 3D player model.
         
         // Now render 3D heart on top
         glEnable(GL_DEPTH_TEST);
@@ -278,6 +308,17 @@ void Game::Render()
                 view3 = glm::translate(view3, glm::vec3(-2.4f, 1.0f, -3.0f));
                 boxShader.SetVector3f("viewPos", -2.4f, 1.0f, -3.0f);
                 Box3->Draw(boxShader, view3, projection3D);
+            }
+
+            // Draw 3D player in the center of the screen with a centered camera
+            if (player) {
+                glm::mat4 playerView = glm::lookAt(
+                    glm::vec3(0.0f, 0.0f, 3.0f),
+                    glm::vec3(0.0f, 0.0f, 0.0f),
+                    glm::vec3(0.0f, 1.0f, 0.0f)
+                );
+                boxShader.SetVector3f("viewPos", 0.0f, 0.0f, 3.0f);
+                player->Draw(boxShader, playerView, projection3D);
             }
         }
         

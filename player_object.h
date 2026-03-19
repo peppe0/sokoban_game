@@ -20,6 +20,15 @@ public:
     // constructor(s)
     float   Radius;
     bool    Stuck;
+
+    // Smooth movement/animation state.
+    bool    IsMoving;
+    glm::vec2 MoveStartPosition;
+    glm::vec2 MoveTargetPosition;
+    glm::vec2 MoveDirection;
+    glm::vec2 VisualOffset;
+    float   MoveTimer;
+    float   MoveDuration;
     
     PlayerObject();
     PlayerObject(glm::vec2 pos, glm::vec2 size, Texture2D sprite);
@@ -27,6 +36,10 @@ public:
     glm::vec2 Move(float dt, unsigned int window_width);
     // resets the ball to original state with given position and velocity
     bool MoveGrid(int dx, int dy, float stepX, float stepY, std::vector<std::vector<unsigned int>>& levelData, std::vector<GameObject>& bricks, struct ma_engine* audioEngine = nullptr);
+    void UpdateAnimation(float dt);
+    bool IsAnimatingMovement() const;
+
+    void Draw(SpriteRenderer &renderer) override;
 
 };
 
