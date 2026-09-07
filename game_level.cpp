@@ -16,6 +16,8 @@ void GameLevel::Load(const char *file, unsigned int levelWidth, unsigned int lev
 {
     // clear old data
     this->Bricks.clear();
+    this->MonsterSpawns.clear();
+    this->PickupSlots.clear();
     // load from file
     unsigned int tileCode;
     GameLevel level;
@@ -55,13 +57,42 @@ bool GameLevel::IsCompleted()
 void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned int levelWidth, unsigned int levelHeight)
 {
 
-    this->TileData = tileData;
     // calculate dimensions
     unsigned int height = tileData.size();
     unsigned int width = tileData[0].size(); // note we can index vector at [0] since this function is only called if height > 0
-    float unit_width = levelWidth / static_cast<float>(width), unit_height = levelHeight / height; 
+    float unit_width = levelWidth / static_cast<float>(width), unit_height = levelHeight / height;
 
-    // initialize level tiles based on tileData		
+    // Markers (monsters = 9, player = 4, pickup slot = 14) say where something may go,
+    // they are not
+    // objects. Record them and leave plain floor behind, so the rest of the game only
+    // ever sees tile codes that stand for something real. Leaving the 4 in place used to
+    // both draw a crate on the player's own cell and make that cell permanently
+    // impassable, since nothing treats 4 as walkable.
+    for (unsigned int y = 0; y < height; ++y)
+    {
+        for (unsigned int x = 0; x < width; ++x)
+        {
+            if (tileData[y][x] == 9)
+            {
+                this->MonsterSpawns.push_back(glm::vec2(unit_width * x, unit_height * y));
+                tileData[y][x] = 0;
+            }
+            else if (tileData[y][x] == 4)
+            {
+                this->PlayerStartPos = glm::vec2(unit_width * x, unit_height * y);
+                tileData[y][x] = 0;
+            }
+            else if (tileData[y][x] == 14)
+            {
+                this->PickupSlots.push_back(glm::vec2(unit_width * x, unit_height * y));
+                tileData[y][x] = 0;
+            }
+        }
+    }
+
+    this->TileData = tileData;
+
+    // initialize level tiles based on tileData
     for (unsigned int y = 0; y < height; ++y)
     {
         for (unsigned int x = 0; x < width; ++x)
@@ -82,10 +113,6 @@ void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned i
                     color = glm::vec3(0.2f, 0.6f, 1.0f);
                 else if (tileData[y][x] == 3)
                     color = glm::vec3(0.0f, 0.7f, 0.0f);
-                else if (tileData[y][x] == 4){
-                    color = glm::vec3(0.8f, 0.8f, 0.4f);
-            this->PlayerStartPos = glm::vec2(unit_width * x, unit_height * y);
-            }
                 else if (tileData[y][x] == 5)
                     color = glm::vec3(1.0f, 0.5f, 0.0f);
               

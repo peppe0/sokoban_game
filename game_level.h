@@ -26,6 +26,14 @@ public:
     // level state
     std::vector<GameObject> Bricks;
     glm::vec2 PlayerStartPos;
+    // Tile code 9 marks a monster spawn. It is stripped out of TileData during load
+    // (the cell becomes plain floor) so the box-pushing and win-condition logic,
+    // which both scan TileData, never sees a monster.
+    std::vector<glm::vec2> MonsterSpawns;
+    // Tile code 14 marks a cell where a pickup MAY appear. Like the spawns it is stripped
+    // to floor on load; Game shuffles the level's pickups across these cells plus the
+    // cells the pickups already occupy.
+    std::vector<glm::vec2> PickupSlots;
 
     std::vector<std::vector<unsigned int>> TileData;
 

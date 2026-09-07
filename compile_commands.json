@@ -1,0 +1,57 @@
+[
+  {
+    "directory": "/Users/giuseppeabbatiello/Desktop/sokoban_game",
+    "command": "/usr/bin/clang++ -std=c++17 -Wall -g -Wno-deprecated -I./dependencies/include -I/opt/homebrew/include/freetype2 -I/opt/homebrew/include -c main.cpp",
+    "file": "main.cpp"
+  },
+  {
+    "directory": "/Users/giuseppeabbatiello/Desktop/sokoban_game",
+    "command": "/usr/bin/clang++ -std=c++17 -Wall -g -Wno-deprecated -I./dependencies/include -I/opt/homebrew/include/freetype2 -I/opt/homebrew/include -c game.cpp",
+    "file": "game.cpp"
+  },
+  {
+    "directory": "/Users/giuseppeabbatiello/Desktop/sokoban_game",
+    "command": "/usr/bin/clang++ -std=c++17 -Wall -g -Wno-deprecated -I./dependencies/include -I/opt/homebrew/include/freetype2 -I/opt/homebrew/include -c game_level.cpp",
+    "file": "game_level.cpp"
+  },
+  {
+    "directory": "/Users/giuseppeabbatiello/Desktop/sokoban_game",
+    "command": "/usr/bin/clang++ -std=c++17 -Wall -g -Wno-deprecated -I./dependencies/include -I/opt/homebrew/include/freetype2 -I/opt/homebrew/include -c game_object.cpp",
+    "file": "game_object.cpp"
+  },
+  {
+    "directory": "/Users/giuseppeabbatiello/Desktop/sokoban_game",
+    "command": "/usr/bin/clang++ -std=c++17 -Wall -g -Wno-deprecated -I./dependencies/include -I/opt/homebrew/include/freetype2 -I/opt/homebrew/include -c heart_3d.cpp",
+    "file": "heart_3d.cpp"
+  },
+  {
+    "directory": "/Users/giuseppeabbatiello/Desktop/sokoban_game",
+    "command": "/usr/bin/clang++ -std=c++17 -Wall -g -Wno-deprecated -I./dependencies/include -I/opt/homebrew/include/freetype2 -I/opt/homebrew/include -c player_object.cpp",
+    "file": "player_object.cpp"
+  },
+  {
+    "directory": "/Users/giuseppeabbatiello/Desktop/sokoban_game",
+    "command": "/usr/bin/clang++ -std=c++17 -Wall -g -Wno-deprecated -I./dependencies/include -I/opt/homebrew/include/freetype2 -I/opt/homebrew/include -c resource_manager.cpp",
+    "file": "resource_manager.cpp"
+  },
+  {
+    "directory": "/Users/giuseppeabbatiello/Desktop/sokoban_game",
+    "command": "/usr/bin/clang++ -std=c++17 -Wall -g -Wno-deprecated -I./dependencies/include -I/opt/homebrew/include/freetype2 -I/opt/homebrew/include -c shader.cpp",
+    "file": "shader.cpp"
+  },
+  {
+    "directory": "/Users/giuseppeabbatiello/Desktop/sokoban_game",
+    "command": "/usr/bin/clang++ -std=c++17 -Wall -g -Wno-deprecated -I./dependencies/include -I/opt/homebrew/include/freetype2 -I/opt/homebrew/include -c spriteRendered.cpp",
+    "file": "spriteRendered.cpp"
+  },
+  {
+    "directory": "/Users/giuseppeabbatiello/Desktop/sokoban_game",
+    "command": "/usr/bin/clang++ -std=c++17 -Wall -g -Wno-deprecated -I./dependencies/include -I/opt/homebrew/include/freetype2 -I/opt/homebrew/include -c text_render.cpp",
+    "file": "text_render.cpp"
+  },
+  {
+    "directory": "/Users/giuseppeabbatiello/Desktop/sokoban_game",
+    "command": "/usr/bin/clang++ -std=c++17 -Wall -g -Wno-deprecated -I./dependencies/include -I/opt/homebrew/include/freetype2 -I/opt/homebrew/include -c texture.cpp",
+    "file": "texture.cpp"
+  }
+]

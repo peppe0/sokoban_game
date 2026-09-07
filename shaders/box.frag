@@ -11,9 +11,22 @@ uniform vec3 lightColor;
 uniform vec3 viewPos;
 uniform sampler2D diffuseMap;
 uniform bool hasTexture;
+uniform bool useLighting;
 
 void main()
 {
+    vec3 albedo = boxColor;
+    if (hasTexture) {
+        // Tint rather than replace, so a textured mesh can be recoloured (two potions
+        // share one bottle model). Every other caller passes white, which is a no-op.
+        albedo = texture(diffuseMap, TexCoords).rgb * boxColor;
+    }
+
+    if (!useLighting) {
+        FragColor = vec4(albedo, 1.0);
+        return;
+    }
+
     // Ambient
     float ambientStrength = 0.2;
     vec3 ambient = ambientStrength * lightColor;
@@ -31,11 +44,6 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     vec3 specular = specularStrength * spec * lightColor;
     
-    vec3 albedo = boxColor;
-    if (hasTexture) {
-        albedo = texture(diffuseMap, TexCoords).rgb;
-    }
-
     vec3 result = (ambient + diffuse + specular) * albedo;
     FragColor = vec4(result, 1.0);
 }

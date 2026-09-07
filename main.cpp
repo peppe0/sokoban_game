@@ -8,6 +8,9 @@
 // Function prototypes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 const unsigned int SCREEN_WIDTH = 900;
 const unsigned int SCREEN_HEIGHT = 400;
@@ -42,6 +45,9 @@ int main(int argc, char *argv[])
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     // OpenGL configuration (Retina Fix)
     int frameBufferWidth, frameBufferHeight;
@@ -77,6 +83,9 @@ int main(int argc, char *argv[])
         Sokoban.Render();
 
         glfwSwapBuffers(window);
+
+        if (Sokoban.RequestQuit)
+            glfwSetWindowShouldClose(window, true);
     }
 
     glfwTerminate();
@@ -86,7 +95,13 @@ int main(int argc, char *argv[])
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+    {
+        if (Sokoban.State == GAME_MENU)
+            glfwSetWindowShouldClose(window, true);
+        else
+            Sokoban.State = GAME_MENU;
+        return;
+    }
     if (key >= 0 && key < 1024)
     {
         if (action == GLFW_PRESS)
@@ -98,7 +113,36 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
+    // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    Sokoban.MouseX = xpos;
+    Sokoban.MouseY = ypos;
+    // Feeds the free camera here rather than in ProcessInput: the drag has to keep
+    // following the cursor even in the states where ProcessInput returns early.
+    Sokoban.MoveCameraWithMouse(xpos, ypos);
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+        Sokoban.MouseClicked = true;
+
+    // The wheel pressed down drives the camera: drag to orbit, Shift+drag to pan.
+    if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+    {
+        if (action == GLFW_PRESS)
+            Sokoban.SetMiddleMouse(true);
+        else if (action == GLFW_RELEASE)
+            Sokoban.SetMiddleMouse(false);
+    }
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    Sokoban.ZoomCamera(static_cast<float>(yoffset));
 }
